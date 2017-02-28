@@ -1,0 +1,9 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+
+10.200.0.201  computer201
+10.200.0.202  ha1
+10.200.0.203  ha2
+10.200.0.204  ha3
+10.200.0.205  controller_vip
