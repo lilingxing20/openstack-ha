@@ -7,7 +7,7 @@ openstack-config --set /etc/nova/nova.conf DEFAULT metadata_listen "$(hostname -
 #openstack-config --set /etc/nova/nova.conf DEFAULT auth_strategy keystone
 #openstack-config --set /etc/nova/nova.conf DEFAULT rpc_backend rabbit
 #openstack-config --set /etc/nova/nova.conf DEFAULT use_neutron True
-#openstack-config --set /etc/nova/nova.conf DEFAULT allow_resize_to_same_host True
+openstack-config --set /etc/nova/nova.conf DEFAULT allow_resize_to_same_host True
 openstack-config --set /etc/nova/nova.conf DEFAULT injected_network_template '$pybasedir/nova/virt/interfaces.template'
 #openstack-config --set /etc/nova/nova.conf DEFAULT image_service "nova.image.glance.GlanceImageService"
 #openstack-config --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
