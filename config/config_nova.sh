@@ -13,7 +13,7 @@ openstack-config --set /etc/nova/nova.conf DEFAULT injected_network_template '$p
 #openstack-config --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 #openstack-config --set /etc/nova/nova.conf DEFAULT network_api_class  nova.network.neutronv2.api.API
 #openstack-config --set /etc/nova/nova.conf DEFAULT security_group_api neutron
-##openstack-config --set /etc/nova/nova.conf DEFAULT metadata_host "$(hostname -s)"
+openstack-config --set /etc/nova/nova.conf DEFAULT metadata_host "$(hostname -i)"
 openstack-config --set /etc/nova/nova.conf DEFAULT osapi_volume_listen "$(hostname -s)"
 openstack-config --set /etc/nova/nova.conf DEFAULT novncproxy_host "$(hostname -s)"
 ### config api_database

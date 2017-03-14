@@ -34,7 +34,7 @@ openstack-config --set /etc/glance/glance-swift.conf  ref1 key teamsun
 ##  config glance-registry 
 ###
 openstack-config --set /etc/glance/glance-registry.conf  DEFAULT bind_host "$(hostname -s)"
-openstack-config --set /etc/glance/glance-registry.conf  DEFAULT sql_connection "mysql+pymysql://glance:teamsun@controller_vip/glance"
+openstack-config --set /etc/glance/glance-registry.conf  database connection "mysql+pymysql://glance:teamsun@controller_vip/glance"
 ##  authtoken
 openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken auth_uri http://controller_vip:5000/v2.0
 openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken identity_uri http://controller_vip:35357
@@ -43,3 +43,10 @@ openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken iden
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_password password
 ##  paste_deploy
 #openstack-config --set /etc/glance/glance-registry.conf  paste_deploy flavor keystone
+###
+##  config glance-cache 
+###
+openstack-config --set /etc/glance/glance-cache.conf  DEFAULT registry_host "controller_vip"
+openstack-config --set /etc/glance/glance-cache.conf  DEFAULT auth_uri http://controller_vip:5000/v2.0
+
+

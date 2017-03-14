@@ -62,3 +62,8 @@ test -f /etc/neutron/plugin.ini || ln -s plugins/ml2/ml2_conf.ini /etc/neutron/p
 ###
 openstack-config --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_ip controller_vip
 #openstack-config --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret teamsun
+###
+##  config neutron api-paste.ini
+###
+openstack-config --set /etc/neutron/api-paste.ini "filter:authtoken" identity_uri "http://controller_vip:35357"
+openstack-config --set /etc/neutron/api-paste.ini "filter:authtoken" auth_uri "http://controller_vip:5000/v2.0"
