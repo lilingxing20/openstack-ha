@@ -1,13 +1,18 @@
 #!/bin/bash
 
 ## vip
-pcs resource create controller_vip ocf:heartbeat:IPaddr2 ip=10.200.0.205 cidr_netmask=8 op start interval=0s timeout=20s stop interval=0s timeout=20s monitor interval=10s timeout=20s
+vip_addr=$(cat /etc/hosts | grep controller_vip | awk '{print $1}')
+pcs resource create controller_vip ocf:heartbeat:IPaddr2 ip=${vip_addr} cidr_netmask=24 op start interval=0s timeout=20s stop interval=0s timeout=20s monitor interval=10s timeout=20s
 
 
 ## haproxy
 pcs resource create haproxy systemd:haproxy op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
 pcs constraint order start controller_vip  then start haproxy-clone  option kind=Optional
 pcs constraint colocation add controller_vip with haproxy-clone INFINITY
+
+
+## core
+pcs resource create openstack-core ocf:heartbeat:Dummy meta interleave=true op start interval=0s timeout=20 stop interval=0s timeout=20 monitor interval=10 timeout=20  --clone
 
 
 ## galera
@@ -28,10 +33,6 @@ pcs constraint order start rabbitmq-clone then start openstack-core-clone option
 ## httpd
 pcs resource create httpd systemd:httpd meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
 pcs constraint order start openstack-core-clone then start httpd-clone option kind=Mandatory
-
-
-## core
-pcs resource create openstack-core ocf:heartbeat:Dummy meta interleave=true op start interval=0s timeout=20 stop interval=0s timeout=20 monitor interval=10 timeout=20  --clone
 
 
 ## neutron

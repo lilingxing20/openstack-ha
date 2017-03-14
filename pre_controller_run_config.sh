@@ -18,6 +18,7 @@ bash -x config/config_nova.sh
 yum install -y pcs pacemaker corosync fence-agents-all resource-agents
 systemctl enable pcsd
 systemctl start pcsd
+echo 'password' | passwd --stdin hacluster
 
 ## hapryx
 yum install -y haproxy
