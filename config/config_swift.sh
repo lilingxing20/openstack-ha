@@ -2,6 +2,7 @@
 ###
 ##  config account-server 
 ###
+openstack-config --set /etc/swift/account-server.conf "DEFAULT" bind_ip "$(hostname -i)"
 openstack-config --set /etc/swift/account-server.conf "pipeline:main" pipeline "healthcheck account-server"
 openstack-config --set /etc/swift/account-server.conf "filter:healthcheck" use "egg:swift#healthcheck"
 openstack-config --set /etc/swift/account-server.conf "filter:recon" use "egg:swift#recon"
@@ -10,6 +11,8 @@ openstack-config --set /etc/swift/account-server.conf "filter:recon" recon_cache
 ##  config container-server 
 ###
 openstack-config --set /etc/swift/container-server.conf DEFAULT mount_check false
+openstack-config --set /etc/swift/container-server.conf DEFAULT bind_ip "$(hostname -i)"
+openstack-config --set /etc/swift/container-server.conf DEFAULT allowed_sync_hosts "controller1,controller2,controller3"
 openstack-config --set /etc/swift/container-server.conf "pipeline:main" pipeline "healthcheck container-server"
 openstack-config --set /etc/swift/container-server.conf "filter:healthcheck" use "egg:swift#healthcheck"
 openstack-config --set /etc/swift/container-server.conf "filter:recon" use "egg:swift#recon"
@@ -17,6 +20,7 @@ openstack-config --set /etc/swift/container-server.conf "filter:recon" recon_cac
 ###
 ##  config object-server 
 ###
+openstack-config --set /etc/swift/object-server.conf DEFAULT bind_ip "$(hostname -i)"
 openstack-config --set /etc/swift/object-server.conf DEFAULT mount_check false
 openstack-config --set /etc/swift/object-server.conf "pipeline:main" pipeline "healthcheck recon object-server"
 openstack-config --set /etc/swift/object-server.conf "filter:healthcheck" use "egg:swift#healthcheck"
@@ -25,6 +29,7 @@ openstack-config --set /etc/swift/object-server.conf "filter:recon" recon_cache_
 ###
 ##  config proxy-server 
 ###
+openstack-config --set /etc/swift/proxy-server.conf DEFAULT bind_ip "$(hostname -i)"
 openstack-config --set /etc/swift/proxy-server.conf DEFAULT workers 0
 openstack-config --set /etc/swift/proxy-server.conf "filter:authtoken" auth_uri http://controller_vip:5000/v2.0
 openstack-config --set /etc/swift/proxy-server.conf "filter:authtoken" identity_uri http://controller_vip:35357
