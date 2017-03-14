@@ -27,7 +27,7 @@ openstack-config --set /etc/neutron/neutron.conf nova auth_url http://controller
 #openstack-config --set /etc/neutron/neutron.conf nova tenant_name services
 ## rabbit
 openstack-config --del /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_host
-openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_hosts controller1,controller2,controller3
 openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_ha_queues True
 ###
 ##  config neutron l2 agent

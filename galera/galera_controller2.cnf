@@ -9,7 +9,7 @@ key_buffer_size = 16M
 
 [mysqld]
 basedir = /usr
-bind-address = ha1
+bind-address = controller2
 binlog_format = ROW
 datadir = /var/lib/mysql
 default-storage-engine = innodb
@@ -41,7 +41,7 @@ user = mysql
 wsrep_auto_increment_control = 1
 wsrep_causal_reads = 0
 wsrep_certify_nonPK = 1
-wsrep_cluster_address = gcomm://ha1,ha2,ha3
+wsrep_cluster_address = gcomm://controller1,controller2,controller3
 wsrep_cluster_name = galera_cluster
 wsrep_convert_LOCK_to_trx = 0
 wsrep_debug = 0
@@ -50,7 +50,7 @@ wsrep_max_ws_rows = 131072
 wsrep_max_ws_size = 1073741824
 wsrep_on = ON
 wsrep_provider = /usr/lib64/galera/libgalera_smm.so
-wsrep_provider_options = gmcast.listen_addr=tcp://[ha1]:4567;
+wsrep_provider_options = gmcast.listen_addr=tcp://[controller2]:4567;
 wsrep_retry_autocommit = 1
 wsrep_slave_threads = 1
 wsrep_sst_method = rsync

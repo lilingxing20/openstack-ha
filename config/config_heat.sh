@@ -36,7 +36,7 @@ openstack-config --set /etc/heat/heat.conf keystone_authtoken identity_uri http:
 #openstack-config --set /etc/heat/heat.conf keystone_authtoken admin_password teamsun
 ## rabbit
 openstack-config --del /etc/heat/heat.conf oslo_messaging_rabbit rabbit_host
-openstack-config --set /etc/heat/heat.conf oslo_messaging_rabbit rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/heat/heat.conf oslo_messaging_rabbit rabbit_hosts controller1,controller2,controller3
 openstack-config --set /etc/heat/heat.conf oslo_messaging_rabbit rabbit_ha_queues True
 openstack-config --set /etc/heat/heat.conf oslo_messaging_rabbit heartbeat_timeout_threshold 60
 ## trustee

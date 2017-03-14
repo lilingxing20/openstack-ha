@@ -43,7 +43,7 @@ openstack-config --set /etc/nova/nova.conf neutron  auth_url http://controller_v
 ##openstack-config --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret teamsun
 ###  rabbit
 openstack-config --del /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_host
-openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_hosts controller1,controller2,controller3
 openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_ha_queues True
 ###  vnc
 #openstack-config --set /etc/nova/nova.conf vnc  enabled True
@@ -64,7 +64,7 @@ openstack-config --set /etc/nova/nova.conf vnc  novncproxy_base_url  'http://con
 #openstack-config --set /etc/neutron/neutron.conf DEFAULT service_plugins  router,metering
 ###  config rabbit
 openstack-config --del /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_host
-openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_hosts controller1,controller2,controller3
 openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_ha_queues True
 ###
 ##  config neutron openvswitch_agent.ini

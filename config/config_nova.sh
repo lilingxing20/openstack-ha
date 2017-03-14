@@ -25,7 +25,7 @@ openstack-config --set /etc/nova/nova.conf glance api_servers http://controller_
 ###  config authtoken
 openstack-config --set /etc/nova/nova.conf keystone_authtoken auth_uri http://controller_vip:5000/v2.0
 openstack-config --set /etc/nova/nova.conf keystone_authtoken identity_uri http://controller_vip:35357
-#del#openstack-config --set /etc/nova/nova.conf keystone_authtoken memcached_servers  ha1:11211,ha2:11211,ha3:11211
+#del#openstack-config --set /etc/nova/nova.conf keystone_authtoken memcached_servers  controller1:11211,controller2:11211,controller3:11211
 #openstack-config --set /etc/nova/nova.conf keystone_authtoken admin_user nova
 #openstack-config --set /etc/nova/nova.conf keystone_authtoken admin_tenant_name services
 #openstack-config --set /etc/nova/nova.conf keystone_authtoken admin_password teamsun
@@ -46,8 +46,8 @@ openstack-config --set /etc/nova/nova.conf neutron auth_url http://controller_vi
 #openstack-config --set /etc/nova/nova.conf neutron auth_plugin v3password
 ### config rabbit
 openstack-config --del /etc/nova/nova.conf oslo_messaging_rabbit rabbit_host
-openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit rabbit_hosts controller1,controller2,controller3
 ### config cache 
 openstack-config --set /etc/nova/nova.conf cache backend oslo_cache.memcache_pool
 openstack-config --set /etc/nova/nova.conf cache enabled true
-openstack-config --set /etc/nova/nova.conf cache memcache_servers ha1:11211,ha2:11211,ha3:11211
+openstack-config --set /etc/nova/nova.conf cache memcache_servers controller1:11211,controller2:11211,controller3:11211

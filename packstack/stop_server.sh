@@ -7,8 +7,9 @@ systemctl stop openstack-nova-consoleauth
 systemctl stop openstack-nova-novncproxy
 systemctl stop openstack-nova-scheduler
 ## heat
-systemctl stop openstack-heat-api-cfn
 systemctl stop openstack-heat-api
+systemctl stop openstack-heat-api-cfn
+systemctl stop openstack-heat-api-cloudwatch
 systemctl stop openstack-heat-engine
 ## glance
 systemctl stop openstack-glance-api
@@ -59,8 +60,9 @@ systemctl disable openstack-nova-consoleauth
 systemctl disable openstack-nova-novncproxy
 systemctl disable openstack-nova-scheduler
 ## heat
-systemctl disable openstack-heat-api-cfn
 systemctl disable openstack-heat-api
+systemctl disable openstack-heat-api-cfn
+systemctl disable openstack-heat-api-cloudwatch
 systemctl disable openstack-heat-engine
 ## glance
 systemctl disable openstack-glance-api

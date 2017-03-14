@@ -4,7 +4,9 @@ mkdir -p --mode=0750 /etc/pacemaker/
 dd if=/dev/urandom of=/etc/pacemaker/authkey bs=4096 count=1
 chgrp haclient /etc/pacemaker
 chown root:haclient /etc/pacemaker/authkey
-rsync -av /etc/pacemaker ha1:/etc/
+rsync -av /etc/pacemaker controller1:/etc/
+rsync -av /etc/pacemaker controller2:/etc/
+rsync -av /etc/pacemaker controller3:/etc/
 
 ##
 pcs config | grep systemd | awk '{print $2}' | while read RESOURCE; do pcs resource update $RESOURCE op start timeout=200s op stop timeout=200s; done

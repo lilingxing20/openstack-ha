@@ -9,7 +9,7 @@ openstack-config --set /etc/cinder/cinder.conf DEFAULT glance_host controller_vi
 #openstack-config --set /etc/cinder/cinder.conf DEFAULT enabled_backends lvm
 ###
 openstack-config --del /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_host
-openstack-config --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_hosts ha1,ha2,ha3
+openstack-config --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_hosts controller1,controller2,controller3
 openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit rabbit_ha_queues True
 ###
 openstack-config --set /etc/cinder/cinder.conf keystone_authtoken auth_uri http://controller_vip:5000/v2.0
