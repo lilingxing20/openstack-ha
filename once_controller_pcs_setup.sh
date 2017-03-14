@@ -103,14 +103,14 @@ pcs constraint colocation add openstack-swift-container-auditor-clone with opens
 pcs constraint colocation add openstack-swift-container-replicator-clone with openstack-swift-container-updater-clone INFINITY
 pcs constraint colocation add openstack-swift-container-updater-clone with openstack-swift-account-clone INFINITY
 pcs constraint colocation add openstack-swift-account-clone with openstack-swift-account-auditor-clone INFINITY
-pcs constraint colocation add openstack-swift-account-auditor-clone with openstack-replicator-clone INFINITY
+pcs constraint colocation add openstack-swift-account-auditor-clone with openstack-swift-account-replicator-clone INFINITY
 pcs constraint colocation add openstack-swift-account-replicator-clone with openstack-swift-account-reaper-clone INFINITY
 pcs constraint colocation add openstack-swift-account-reaper-clone with openstack-swift-object-clone INFINITY
-pcs constraint colocation add openstack-object-clone with openstack-swift-object-auditor-clone INFINITY
-pcs constraint colocation add openstack-object-auditor-clone with openstack-swift-object-replicator-clone INFINITY
-pcs constraint colocation add openstack-object-replicator-clone with openstack-swift-object-updater-clone INFINITY
-pcs constraint colocation add openstack-object-updater-clone with openstack-swift-object-expirer-clone INFINITY
-pcs constraint colocation add openstack-object-expirer-clone with openstack-swift-proxy-clone INFINITY
+pcs constraint colocation add openstack-swift-object-clone with openstack-swift-object-auditor-clone INFINITY
+pcs constraint colocation add openstack-swift-object-auditor-clone with openstack-swift-object-replicator-clone INFINITY
+pcs constraint colocation add openstack-swift-object-replicator-clone with openstack-swift-object-updater-clone INFINITY
+pcs constraint colocation add openstack-swift-object-updater-clone with openstack-swift-object-expirer-clone INFINITY
+pcs constraint colocation add openstack-swift-object-expirer-clone with openstack-swift-proxy-clone INFINITY
 
 
 ## glance
