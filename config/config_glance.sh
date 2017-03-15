@@ -47,6 +47,6 @@ openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken iden
 ##  config glance-cache 
 ###
 openstack-config --set /etc/glance/glance-cache.conf  DEFAULT registry_host "controller_vip"
-openstack-config --set /etc/glance/glance-cache.conf  DEFAULT auth_uri http://controller_vip:5000/v2.0
+openstack-config --set /etc/glance/glance-cache.conf  DEFAULT auth_url http://controller_vip:5000/v2.0
 
 
