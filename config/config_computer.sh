@@ -12,8 +12,9 @@ openstack-config --set /etc/nova/nova.conf DEFAULT  flat_injected true
 openstack-config --set /etc/nova/nova.conf DEFAULT  force_config_drive true
 openstack-config --set /etc/nova/nova.conf DEFAULT  metadata_host controller_vip
 #openstack-config --set /etc/nova/nova.conf DEFAULT  security_group_api neutron
+openstack-config --set /etc/nova/nova.conf DEFAULT  config_drive_format vfat
 ###  api database
-openstack-config --set /etc/nova/nova.conf api_database  connection mysql://nova_api:teamsun@controller_vip/nova
+openstack-config --set /etc/nova/nova.conf api_database  connection mysql://nova_api:teamsun@controller_vip/nova_api
 ###  database
 openstack-config --set /etc/nova/nova.conf database  connection mysql://nova:teamsun@controller_vip/nova
 ###  glance
