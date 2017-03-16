@@ -2,12 +2,12 @@
 ###
 ##  config glance-api 
 ###
-openstack-config --set /etc/glance/glance-api.conf  DEFAULT bind_host "$(hostname -s)"
-openstack-config --set /etc/glance/glance-api.conf  DEFAULT registry_host controller_vip
-openstack-config --set /etc/glance/glance-api.conf database connection "mysql+pymysql://glance:teamsun@controller_vip/glance"
+openstack-config --set /etc/glance/glance-api.conf  DEFAULT bind_host "$(hostname -s)-internalapi"
+openstack-config --set /etc/glance/glance-api.conf  DEFAULT registry_host control_vip
+openstack-config --set /etc/glance/glance-api.conf database connection "mysql+pymysql://glance:teamsun@control_vip/glance"
 ##  authtoken
-openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken auth_uri http://controller_vip:5000/v2.0
-openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken identity_uri http://controller_vip:35357
+openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken auth_uri http://control_vip:5000/v2.0
+openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken identity_uri http://control_vip:35357
 #openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken admin_tenant_name services
 #openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken admin_user glance
 #openstack-config --set /etc/glance/glance-api.conf  keystone_authtoken admin_password teamsun
@@ -28,16 +28,16 @@ openstack-config --set /etc/glance/glance-api.conf  glance_store swift_store_con
 ###
 openstack-config --set /etc/glance/glance-swift.conf  ref1 user services:glance
 openstack-config --set /etc/glance/glance-swift.conf  ref1 auth_version 2
-openstack-config --set /etc/glance/glance-swift.conf  ref1 auth_address http://controller_vip:5000/v2.0
+openstack-config --set /etc/glance/glance-swift.conf  ref1 auth_address http://control_vip:5000/v2.0
 openstack-config --set /etc/glance/glance-swift.conf  ref1 key teamsun
 ###
 ##  config glance-registry 
 ###
-openstack-config --set /etc/glance/glance-registry.conf  DEFAULT bind_host "$(hostname -s)"
-openstack-config --set /etc/glance/glance-registry.conf  database connection "mysql+pymysql://glance:teamsun@controller_vip/glance"
+openstack-config --set /etc/glance/glance-registry.conf  DEFAULT bind_host "$(hostname -s)-internalapi"
+openstack-config --set /etc/glance/glance-registry.conf  database connection "mysql+pymysql://glance:teamsun@control_vip/glance"
 ##  authtoken
-openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken auth_uri http://controller_vip:5000/v2.0
-openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken identity_uri http://controller_vip:35357
+openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken auth_uri http://control_vip:5000/v2.0
+openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken identity_uri http://control_vip:35357
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_tenant_name services
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_user glance
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_password teamsun
@@ -46,7 +46,7 @@ openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken iden
 ###
 ##  config glance-cache 
 ###
-openstack-config --set /etc/glance/glance-cache.conf  DEFAULT registry_host "controller_vip"
-openstack-config --set /etc/glance/glance-cache.conf  DEFAULT auth_url http://controller_vip:5000/v2.0
+openstack-config --set /etc/glance/glance-cache.conf  DEFAULT registry_host "control_vip"
+openstack-config --set /etc/glance/glance-cache.conf  DEFAULT auth_url http://control_vip:5000/v2.0
 
 

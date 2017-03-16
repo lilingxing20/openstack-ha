@@ -10,15 +10,15 @@ openstack-config --set /etc/nova/nova.conf DEFAULT  injected_network_template '$
 openstack-config --set /etc/nova/nova.conf DEFAULT  flat_injected true
 #openstack-config --set /etc/nova/nova.conf DEFAULT  network_api_class  nova.network.neutronv2.api.API
 openstack-config --set /etc/nova/nova.conf DEFAULT  force_config_drive true
-openstack-config --set /etc/nova/nova.conf DEFAULT  metadata_host controller_vip
+openstack-config --set /etc/nova/nova.conf DEFAULT  metadata_host control_vip
 #openstack-config --set /etc/nova/nova.conf DEFAULT  security_group_api neutron
 openstack-config --set /etc/nova/nova.conf DEFAULT  config_drive_format vfat
 ###  api database
-openstack-config --set /etc/nova/nova.conf api_database  connection mysql://nova_api:teamsun@controller_vip/nova_api
+openstack-config --set /etc/nova/nova.conf api_database  connection mysql://nova_api:teamsun@control_vip/nova_api
 ###  database
-openstack-config --set /etc/nova/nova.conf database  connection mysql://nova:teamsun@controller_vip/nova
+openstack-config --set /etc/nova/nova.conf database  connection mysql://nova:teamsun@control_vip/nova
 ###  glance
-openstack-config --set /etc/nova/nova.conf glance  api_servers http://controller_vip:9292
+openstack-config --set /etc/nova/nova.conf glance  api_servers http://control_vip:9292
 ###  libvirt
 #openstack-config --set /etc/nova/nova.conf libvirt  virt_type qemu
 #openstack-config --set /etc/nova/nova.conf libvirt  inject_password False
@@ -29,10 +29,10 @@ openstack-config --set /etc/nova/nova.conf glance  api_servers http://controller
 #openstack-config --set /etc/nova/nova.conf libvirt  vif_driver nova.virt.libvirt.vif.LibvirtGenericVIFDriver
 openstack-config --set /etc/nova/nova.conf libvirt  iscsi_use_multipath true
 ###  neutron
-openstack-config --set /etc/nova/nova.conf neutron  url  http://controller_vip:9696
+openstack-config --set /etc/nova/nova.conf neutron  url  http://control_vip:9696
 #openstack-config --set /etc/nova/nova.conf neutron  region_name RegionOne
 #openstack-config --set /etc/nova/nova.conf neutron  ovs_bridge br-int
-openstack-config --set /etc/nova/nova.conf neutron  auth_url http://controller_vip:35357/v3
+openstack-config --set /etc/nova/nova.conf neutron  auth_url http://control_vip:35357/v3
 ##openstack-config --set /etc/nova/nova.conf neutron  auth_type password
 #openstack-config --set /etc/nova/nova.conf neutron  auth_plugin v3password
 #openstack-config --set /etc/nova/nova.conf neutron  username neutron
@@ -44,13 +44,13 @@ openstack-config --set /etc/nova/nova.conf neutron  auth_url http://controller_v
 ##openstack-config --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret teamsun
 ###  rabbit
 openstack-config --del /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_host
-openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_hosts controller1,controller2,controller3
+openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_hosts controller1-internalapi,controller2-internalapi,controller3-internalapi
 openstack-config --set /etc/nova/nova.conf oslo_messaging_rabbit  rabbit_ha_queues True
 ###  vnc
 #openstack-config --set /etc/nova/nova.conf vnc  enabled True
 openstack-config --set /etc/nova/nova.conf vnc  vncserver_listen '0.0.0.0'
-openstack-config --set /etc/nova/nova.conf vnc  vncserver_proxyclient_address  $(hostname)
-openstack-config --set /etc/nova/nova.conf vnc  novncproxy_base_url  'http://controller_vip:6080/vnc_auto.html'
+openstack-config --set /etc/nova/nova.conf vnc  vncserver_proxyclient_address  "$(hostname)-internalapi"
+openstack-config --set /etc/nova/nova.conf vnc  novncproxy_base_url  'http://control_vip:6080/vnc_auto.html'
 ###
 
 
@@ -65,7 +65,7 @@ openstack-config --set /etc/nova/nova.conf vnc  novncproxy_base_url  'http://con
 #openstack-config --set /etc/neutron/neutron.conf DEFAULT service_plugins  router,metering
 ###  config rabbit
 openstack-config --del /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_host
-openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_hosts controller1,controller2,controller3
+openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_hosts controller1-internalapi,controller2-internalapi,controller3-internalapi
 openstack-config --set /etc/neutron/neutron.conf oslo_messaging_rabbit  rabbit_ha_queues True
 ###
 ##  config neutron openvswitch_agent.ini

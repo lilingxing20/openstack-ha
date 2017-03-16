@@ -2,7 +2,7 @@
 
 CURDIR=$(cd $(dirname "$0") && pwd)
 
-test -f /etc/haproxy/haproxy.cfg && mv /etc/haproxy/haproxy.cfg{,.bk}
+test -f /etc/haproxy/haproxy.cfg && mv /etc/haproxy/haproxy.cfg{,.$(date +%Y%m%d%H%M%S)}
 cp ${CURDIR}/haproxy.cfg /etc/haproxy/
 
 echo net.ipv4.ip_nonlocal_bind=1 >/etc/sysctl.d/haproxy.conf

@@ -1,7 +1,7 @@
 unset OS_SERVICE_TOKEN
 export OS_USERNAME=admin
 export OS_PASSWORD=teamsun
-export OS_AUTH_URL=http://controller_vip:5000/v2.0
+export OS_AUTH_URL=http://control_vip:5000/v2.0
 export PS1='[\u@\h \W(openrc_services)]\$ '
 export OS_IMAGE_API_VERSION=1
 
