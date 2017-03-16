@@ -1,18 +1,23 @@
 #!/bin/bash
 
 ## vip
-vip_addr=$(cat /etc/hosts | grep controller_vip | awk '{print $1}')
-pcs resource create controller_vip ocf:heartbeat:IPaddr2 ip=${vip_addr} cidr_netmask=24 op start interval=0s timeout=20s stop interval=0s timeout=20s monitor interval=10s timeout=20s
+control_vip_addr=$(cat /etc/hosts | grep control_vip | awk '{print $1}')
+public_vip_addr=$(cat /etc/hosts | grep control_vip | awk '{print $1}')
+pcs resource create control_vip ocf:heartbeat:IPaddr2 ip=${control_vip_addr} cidr_netmask=24 op start interval=0s timeout=20s stop interval=0s timeout=20s monitor interval=10s timeout=20s
+pcs resource create public_vip ocf:heartbeat:IPaddr2 ip=${public_vip_addr} cidr_netmask=24 op start interval=0s timeout=20s stop interval=0s timeout=20s monitor interval=10s timeout=20s
+
 
 
 ## haproxy
 pcs resource create haproxy systemd:haproxy op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
-pcs constraint order start controller_vip  then start haproxy-clone  option kind=Optional
-pcs constraint colocation add controller_vip with haproxy-clone INFINITY
+pcs constraint order start control_vip  then start haproxy-clone  option kind=Optional
+pcs constraint order start public_vip  then start haproxy-clone  option kind=Optional
+pcs constraint colocation add control_vip with haproxy-clone INFINITY
+pcs constraint colocation add public_vip with haproxy-clone INFINITY
 
 
 ## core
-pcs resource create openstack-core ocf:heartbeat:Dummy meta interleave=true op start interval=0s timeout=20 stop interval=0s timeout=20 monitor interval=10 timeout=20  --clone
+pcs resource create openstack-core ocf:heartbeat:Dummy meta interleave=true op start interval=0s timeout=20 stop interval=0s timeout=20 monitor interval=10 timeout=20  --clone  interleave=true
 
 
 ## galera
@@ -21,29 +26,29 @@ pcs constraint order promote galera-master then start openstack-core-clone optio
 
 
 ## memcached
-pcs resource create memcached systemd:memcached meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
+pcs resource create memcached systemd:memcached meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
 pcs constraint order start memcached-clone then start openstack-core-clone option kind=Mandatory
 
 
 ## rabbitmq
-pcs resource create rabbitmq rabbitmq-cluster set_policy='ha-all ^(?!amq\.).* {"ha-mode":"all"}' meta notify=true ordered=true interleave=true --clone
+pcs resource create rabbitmq rabbitmq-cluster set_policy='ha-all ^(?!amq\.).* {"ha-mode":"all"}' meta notify=true ordered=true interleave=true --clone ordered=true interleave=true
 pcs constraint order start rabbitmq-clone then start openstack-core-clone option kind=Mandatory
 
 
 ## httpd
-pcs resource create httpd systemd:httpd meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
+pcs resource create httpd systemd:httpd meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
 pcs constraint order start openstack-core-clone then start httpd-clone option kind=Mandatory
 
 
 ## neutron
-pcs resource create neutron-server systemd:neutron-server meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-openvswitch-agent systemd:neutron-openvswitch-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-dhcp-agent systemd:neutron-dhcp-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-metadata-agent systemd:neutron-metadata-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-l3-agent systemd:neutron-l3-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-metering-agent systemd:neutron-metering-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create neutron-ovs-cleanup systemd:neutron-ovs-cleanup meta interleave=true op monitor interval=10s timeout=20 start interval=0s timeout=40s stop interval=0s timeout=300s --clone
-pcs resource create neutron-netns-cleanup systemd:neutron-netns-cleanup meta interleave=true op monitor interval=10s timeout=20 start interval=0s timeout=40s stop interval=0s timeout=300s --clone
+pcs resource create neutron-server systemd:neutron-server meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-openvswitch-agent systemd:neutron-openvswitch-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-dhcp-agent systemd:neutron-dhcp-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-metadata-agent systemd:neutron-metadata-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-l3-agent systemd:neutron-l3-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-metering-agent systemd:neutron-metering-agent meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create neutron-ovs-cleanup systemd:neutron-ovs-cleanup meta interleave=true op monitor interval=10s timeout=20 start interval=0s timeout=40s stop interval=0s timeout=300s --clone  interleave=true
+pcs resource create neutron-netns-cleanup systemd:neutron-netns-cleanup meta interleave=true op monitor interval=10s timeout=20 start interval=0s timeout=40s stop interval=0s timeout=300s --clone  interleave=true
 
 pcs constraint order start openstack-core-clone then start neutron-server-clone
 pcs constraint order start neutron-server-clone then start neutron-openvswitch-agent-clone
@@ -61,11 +66,11 @@ pcs constraint colocation add neutron-netns-cleanup-clone with neutron-ovs-clean
 
 
 ## nova
-pcs resource create openstack-nova-api systemd:openstack-nova-api meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-nova-scheduler systemd:openstack-nova-scheduler meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-nova-conductor systemd:openstack-nova-conductor meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-nova-consoleauth systemd:openstack-nova-consoleauth meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-nova-novncproxy systemd:openstack-nova-novncproxy meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-nova-api systemd:openstack-nova-api meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-nova-scheduler systemd:openstack-nova-scheduler meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-nova-conductor systemd:openstack-nova-conductor meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-nova-consoleauth systemd:openstack-nova-consoleauth meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-nova-novncproxy systemd:openstack-nova-novncproxy meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 
 pcs constraint order start openstack-core-clone then start openstack-nova-consoleauth-clone option kind=Mandatory
 pcs constraint order start openstack-nova-consoleauth-clone then start openstack-nova-novncproxy-clone  option kind=Mandatory
@@ -80,23 +85,23 @@ pcs constraint colocation add openstack-nova-novncproxy-clone with openstack-nov
 
 
 ## swift
-pcs resource create openstack-swift-container systemd:openstack-swift-container op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-container-auditor systemd:openstack-swift-container-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-container-replicator systemd:openstack-swift-container-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-container-updater systemd:openstack-swift-container-updater op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-swift-container systemd:openstack-swift-container op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-container-auditor systemd:openstack-swift-container-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-container-replicator systemd:openstack-swift-container-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-container-updater systemd:openstack-swift-container-updater op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 
-pcs resource create openstack-swift-account systemd:openstack-swift-account op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-account-auditor systemd:openstack-swift-account-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-account-replicator systemd:openstack-swift-account-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-account-reaper systemd:openstack-swift-account-reaper op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-swift-account systemd:openstack-swift-account op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-account-auditor systemd:openstack-swift-account-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-account-replicator systemd:openstack-swift-account-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-account-reaper systemd:openstack-swift-account-reaper op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 
-pcs resource create openstack-swift-object systemd:openstack-swift-object op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-object-auditor systemd:openstack-swift-object-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-object-replicator systemd:openstack-swift-object-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-object-updater systemd:openstack-swift-object-updater op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-swift-object-expirer systemd:openstack-swift-object-expirer op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-swift-object systemd:openstack-swift-object op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-object-auditor systemd:openstack-swift-object-auditor op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-object-replicator systemd:openstack-swift-object-replicator op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-object-updater systemd:openstack-swift-object-updater op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-swift-object-expirer systemd:openstack-swift-object-expirer op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 
-pcs resource create openstack-swift-proxy systemd:openstack-swift-proxy op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-swift-proxy systemd:openstack-swift-proxy op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 #
 pcs constraint colocation add openstack-swift-container-clone with openstack-swift-container-auditor-clone INFINITY
 pcs constraint colocation add openstack-swift-container-auditor-clone with openstack-swift-container-replicator-clone INFINITY
@@ -114,8 +119,8 @@ pcs constraint colocation add openstack-swift-object-expirer-clone with openstac
 
 
 ## glance
-pcs resource create openstack-glance-api systemd:openstack-glance-api meta interleave=true op monitor start-delay=10s --clone
-pcs resource create openstack-glance-registry systemd:openstack-glance-registry meta interleave=true op monitor start-delay=10s --clone
+pcs resource create openstack-glance-api systemd:openstack-glance-api meta interleave=true op monitor start-delay=10s --clone  interleave=true
+pcs resource create openstack-glance-registry systemd:openstack-glance-registry meta interleave=true op monitor start-delay=10s --clone  interleave=true
 pcs constraint order start openstack-core-clone then start openstack-glance-registry-clone option kind=Mandatory
 pcs constraint order start openstack-glance-registry-clone then start openstack-glance-api-clone option kind=Mandatory
 
@@ -123,10 +128,10 @@ pcs constraint colocation add openstack-glance-api-clone with openstack-glance-r
 
 
 ## heat
-pcs resource create openstack-heat-api systemd:openstack-heat-api meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
-pcs resource create openstack-heat-api-cfn systemd:openstack-heat-api-cfn meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
-pcs resource create openstack-heat-api-cloudwatch systemd:openstack-heat-api-cloudwatch meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
-pcs resource create openstack-heat-engine systemd:openstack-heat-engine meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone
+pcs resource create openstack-heat-api systemd:openstack-heat-api meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
+pcs resource create openstack-heat-api-cfn systemd:openstack-heat-api-cfn meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
+pcs resource create openstack-heat-api-cloudwatch systemd:openstack-heat-api-cloudwatch meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
+pcs resource create openstack-heat-engine systemd:openstack-heat-engine meta interleave=true op start interval=0s timeout=200s stop interval=0s timeout=200s monitor interval=60s --clone  interleave=true
 
 pcs constraint order start openstack-core-clone then start openstack-heat-api-clone
 pcs constraint order start openstack-heat-api-clone  then start openstack-heat-api-cfn-clone
@@ -139,8 +144,8 @@ pcs constraint colocation add openstack-heat-api-cfn-clone with openstack-heat-a
 
 
 ## cinder
-pcs resource create openstack-cinder-api systemd:openstack-cinder-api meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-cinder-scheduler systemd:openstack-cinder-scheduler meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-cinder-api systemd:openstack-cinder-api meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
+pcs resource create openstack-cinder-scheduler systemd:openstack-cinder-scheduler meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone  interleave=true
 pcs resource create openstack-cinder-volume systemd:openstack-cinder-volume op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s
 
 pcs constraint order start openstack-core-clone then start openstack-cinder-api-clone

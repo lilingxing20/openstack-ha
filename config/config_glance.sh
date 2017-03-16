@@ -40,7 +40,7 @@ openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken auth
 openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken identity_uri http://controller_vip:35357
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_tenant_name services
 #openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_user glance
-#openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_password password
+#openstack-config --set /etc/glance/glance-registry.conf  keystone_authtoken admin_password teamsun
 ##  paste_deploy
 #openstack-config --set /etc/glance/glance-registry.conf  paste_deploy flavor keystone
 ###

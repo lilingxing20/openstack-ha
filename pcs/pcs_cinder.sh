@@ -1,6 +1,6 @@
 
-pcs resource create openstack-cinder-api systemd:openstack-cinder-api meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
-pcs resource create openstack-cinder-scheduler systemd:openstack-cinder-scheduler meta interleave=true op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone
+pcs resource create openstack-cinder-api systemd:openstack-cinder-api op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone meta interleave=true
+pcs resource create openstack-cinder-scheduler systemd:openstack-cinder-scheduler op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s --clone meta interleave=true
 pcs resource create openstack-cinder-volume systemd:openstack-cinder-volume op monitor interval=60s start interval=0s timeout=200s stop interval=0s timeout=200s
 
 pcs constraint order start openstack-core-clone then start openstack-cinder-api-clone
