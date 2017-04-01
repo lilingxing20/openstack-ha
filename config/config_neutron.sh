@@ -5,6 +5,7 @@
 openstack-config --set /etc/neutron/neutron.conf DEFAULT bind_host  "$(hostname -s)"
 #openstack-config --set /etc/neutron/neutron.conf DEFAULT auth_strategy  keystone
 #openstack-config --set /etc/neutron/neutron.conf DEFAULT rpc_backend  rabbit
+openstack-config --set /etc/neutron/neutron.conf DEFAULT dhcp_agents_per_network 3
 #openstack-config --set /etc/neutron/neutron.conf DEFAULT router_scheduler_driver  neutron.scheduler.l3_agent_scheduler.ChanceScheduler
 openstack-config --set /etc/neutron/neutron.conf DEFAULT nova_url  "http://controller_vip:8774/v2"
 ## database
