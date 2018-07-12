@@ -38,16 +38,14 @@ done
 
 echo ${node_control_ip_arr[*]}
 
-SSH_CMD="ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
+SSH_CMD='ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null '
 
 yaml_file='ceph'
-## install puppet
+
+## config puppet
 for node in ${node_control_ip_arr[*]}; do
    echo $node
-   $SSH_CMD $node "yum clean all
-yum makecache
-yum install -y puppet rsync
-echo '---
+   $SSH_CMD $node "echo '---
 :backends:
   - yaml
 :hierarchy:
@@ -56,14 +54,6 @@ echo '---
   :datadir: /var/tmp/ocata/hieradata
 ' >/etc/puppet/hiera.yaml
 " &
-done
-wait
-
-
-## copy puppet script
-for node in ${node_control_ip_arr[*]}; do
-   echo $node
-   rsync -av /home/lixx/openstackha/openstack/ocata $node:/var/tmp/ &
 done
 wait
 

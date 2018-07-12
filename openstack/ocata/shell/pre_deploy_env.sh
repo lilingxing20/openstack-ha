@@ -38,38 +38,28 @@ done
 
 echo ${node_control_ip_arr[*]}
 
-SSH_CMD="ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
+SSH_CMD='ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+RSYNC_CMD='rsync -avz --progress -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
-yaml_file='compute_pacemaker'
-
-## config puppet
+yaml_file='ceph'
+## install puppet
 for node in ${node_control_ip_arr[*]}; do
    echo $node
-   $SSH_CMD $node "echo '---
-:backends:
-  - yaml
-:hierarchy:
-  - $yaml_file
-:yaml:
-  :datadir: /var/tmp/ocata/hieradata
-' >/etc/puppet/hiera.yaml
+   $SSH_CMD $node "yum clean all
+yum makecache
+yum install -y puppet rsync vim
 " &
 done
 wait
 
 
-## compute
-for ii in $(seq 0 5); do
-    echo $ii
-    for node in ${node_control_ip_arr[*]}; do
-        $SSH_CMD $node "puppet --version
-sed -i  's/^step: .*/step: $ii/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
-puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/overcloud_compute.pp -d --logdest /var/log/puppet/aplly_$(date "+%Y_%m_%d_%H_%M_%S").log
-" &
-    done
-    wait
-    sleep 5
+## copy puppet script
+for node in ${node_control_ip_arr[*]}; do
+   echo $node
+   # rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" -av /home/lixx/openstackha/openstack/ocata $node:/var/tmp/ >/dev/null &
+   rsync -az -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" -av /home/lixx/openstackha/openstack/ocata $node:/var/tmp/ &
 done
+wait
 
 
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
