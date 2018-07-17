@@ -40,12 +40,12 @@ echo ${node_control_ip_arr[*]}
 
 SSH_CMD="ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
 
-yaml_file='compute_pacemaker'
-
 ## config puppet
 for node in ${node_control_ip_arr[*]}; do
-   echo $node
-   $SSH_CMD $node "echo '---
+    echo $node
+    # yaml_file="compute_pacemaker"
+    yaml_file="compute_$node"
+    $SSH_CMD $node "echo '---
 :backends:
   - yaml
 :hierarchy:
@@ -60,11 +60,12 @@ wait
 
 ## compute
 for ii in $(seq 0 5); do
-    echo $ii
+    echo "compute step: $ii"
     for node in ${node_control_ip_arr[*]}; do
+        yaml_file="compute_$node"
         $SSH_CMD $node "puppet --version
-sed -i  's/^step: .*/step: $ii/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
-puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/overcloud_compute.pp -d --logdest /var/log/puppet/aplly_$(date "+%Y_%m_%d_%H_%M_%S").log
+sed -i  's/^step: .*/step: ${ii}/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
+puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/overcloud_compute.pp -d --logdest /var/log/puppet/aplly_compute_${ii}_$(date "+%Y_%m_%d_%H_%M_%S").log
 " &
     done
     wait

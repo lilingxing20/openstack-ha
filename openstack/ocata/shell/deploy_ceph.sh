@@ -40,11 +40,10 @@ echo ${node_control_ip_arr[*]}
 
 SSH_CMD="ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "
 
-yaml_file='ceph'
-
 ## config puppet
 for node in ${node_control_ip_arr[*]}; do
    echo $node
+    yaml_file="ceph_$node"
    $SSH_CMD $node "echo '---
 :backends:
   - yaml
@@ -62,9 +61,10 @@ wait
 for ii in 0 2 4; do
     echo $ii
     for node in ${node_control_ip_arr[*]}; do
+        yaml_file="ceph_$node"
         $SSH_CMD $node "puppet --version
-sed -i  's/^step: .*/step: $ii/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
-puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_mon.pp -d --logdest /var/log/puppet/aplly_$(date "+%Y_%m_%d_%H_%M_%S").log
+sed -i  's/^step: .*/step: ${ii}/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
+puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_mon.pp -d --logdest /var/log/puppet/aplly_mon_${ii}_$(date "+%Y_%m_%d_%H_%M_%S").log
 " &
     done
     wait
@@ -76,9 +76,10 @@ done
 for ii in 0 3; do
     echo $ii
     for node in ${node_control_ip_arr[*]}; do
+        yaml_file="ceph_$node"
         $SSH_CMD $node "puppet --version
-sed -i  's/^step: .*/step: $ii/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
-puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_osd.pp -d --logdest /var/log/puppet/aplly_$(date "+%Y_%m_%d_%H_%M_%S").log
+sed -i  's/^step: .*/step: ${ii}/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
+puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_osd.pp -d --logdest /var/log/puppet/aplly_osd_${ii}_$(date "+%Y_%m_%d_%H_%M_%S").log
 " &
     done
     wait

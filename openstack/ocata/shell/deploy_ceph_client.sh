@@ -64,7 +64,7 @@ for ii in 0 2; do
     for node in ${node_control_ip_arr[*]}; do
         $SSH_CMD $node "puppet --version
 sed -i  's/^step: .*/step: $ii/' /var/tmp/ocata/hieradata/${yaml_file}.yaml
-puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_client.pp -d --logdest /var/log/puppet/aplly_$(date "+%Y_%m_%d_%H_%M_%S").log
+puppet apply --modulepath=/var/tmp/ocata/puppet/modules/ /var/tmp/ocata/manifests/ceph_client.pp -d --logdest /var/log/puppet/aplly_ceph_client_${ii}_$(date "+%Y_%m_%d_%H_%M_%S").log
 " &
     done
     wait
